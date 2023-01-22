@@ -11,11 +11,16 @@ Ideas I have that are not implemented yet:
                   Need to be done: We still get an error when we enter just a letter ('g' instead of 'B2' for exemple)
                   -> solution Caroline: getMoveFromUser now checks that length is 2. Removed redundant code that was repeated in isValidMove.
     Notes Caroline: Point system gave points to current player if result was a draw. Fixed with if-sentence
+
+Note from Dena: These 3 are only useful if we make the variables private to the class:
+    val getPlayerName : () -> String = {playerName}
+    val getPlayerMark : () -> Char = {playerMarker}
+    val getPlayerScore : () -> Int = {playerScore}
  */
 
 import kotlin.system.exitProcess
 
-abstract class Game{
+abstract class Game {
     abstract val gameName: String
 }
 
@@ -25,7 +30,7 @@ data class GameBoard (val numRows : Int, val numCols : Int) {
 
 interface GameAction {
     fun play(row: Int, column: Int, marking: Char)
-    fun checkWin(): String
+    fun checkWin(player: Player): String
     fun checkDraw(): Boolean
 }
 
@@ -59,7 +64,7 @@ class TicTacToeGame: Game(),GameAction {
                 println("Cell is already filled. Try another.")
             }
         } else {
-            println("\nInvalid input. ${player.playerName} (${player.playerMarker}), Please try again.")
+            println("\nInvalid input. ${player.playerName} (marker ${player.playerMarker}), Please try again.")
             return false
         }
         return true
@@ -98,14 +103,14 @@ class TicTacToeGame: Game(),GameAction {
         var move : String
 
         do {
-            print("${player.playerName}, please enter the row and column for your move (e.g. B2) (or press 'Q' to quit): ")
+            print("${player.playerName} (marker ${player.playerMarker}), please enter the row and column for your move (e.g. B2) (or press 'Q' to quit): ")
             move = readln().replace(" ", "").uppercase()  // Trim white space, capitalize.
             if (move == "Q")
                 exitProcess(0)
             if (move.length == 2)
                 askAgain = false
             if (askAgain)
-                println("\nInvalid input. ${player.playerName}, (${player.playerMarker}) please try again.")
+                println("\nInvalid input. ${player.playerName} (marker ${player.playerMarker}), please try again.")
         }  while (askAgain)
 
         moveArray[0] = move[0].uppercaseChar() - 'A'
@@ -123,34 +128,32 @@ class TicTacToeGame: Game(),GameAction {
         }
         return true
     }
-    override fun checkWin(): String {
+    override fun checkWin(player : Player): String {
         val rowWinner = checkRows()
         if (rowWinner != -1) {
-            return "Winner on row: $rowWinner"
+            return "Player ${player.playerName} wins on row $rowWinner."
         }
         val colWinner = checkColumns()
         if (colWinner != -1) {
-            return "Winner on column: $colWinner"
+            return "Player ${player.playerName} wins on column $colWinner"
 
         }
         val diagonalWinner = checkDiagonals()
         if (diagonalWinner != -1) {
-            return ("Winner on diagonal: $diagonalWinner")
+            return ("Player ${player.playerName} wins on diagonal $diagonalWinner")
         }
-        val draw = checkDraw()
+        if (numMoves == 9) return ("It's a draw!")
+        /* val draw = checkDraw()
         if(draw){
             return ("It's a draw!")
-        }
+        } */
         return " "
     }
 
     override fun play(row: Int, column: Int, marking: Char) {
         gameboard.board[row][column] = marking
         printGameBoard()
-    }
-
-
-// end fun
+    } // end fun
 } // end class
 
 class Player (private var playerScore : Int =0, val playerNum : Int, val playerMarker : Char) {
@@ -166,10 +169,8 @@ class Player (private var playerScore : Int =0, val playerNum : Int, val playerM
     val getPlayerMark : () -> Char = {playerMarker}
     val getPlayerScore : () -> Int = {playerScore}
     val increaseScore : () -> Unit = {playerScore += 1}
-    val printPlayerScore: () -> Unit = {println("Player $playerName has ${getPlayerScore()} point(s)")}
+    val printPlayerScore: () -> Unit = {println("Player $playerName (marker $playerMarker) has ${getPlayerScore()} point(s)")}
 }
-
-
 
 fun main() {
     val ticTacToe = TicTacToeGame()
@@ -185,9 +186,9 @@ fun main() {
             //currPlayer = if (currPlayer == player1) player2 else player1
 
             if (ticTacToe.numMoves > 4) {
-                if (ticTacToe.checkWin() != " ") {
-                    println("$ticTacToe.checkWin()")
-                    if (ticTacToe.checkWin() != "It's a draw!")
+                if (ticTacToe.checkWin(currPlayer) != " ") {
+                    println("${ticTacToe.checkWin(currPlayer)}")
+                    if (ticTacToe.checkWin(currPlayer) != "It's a draw!")
                         currPlayer.increaseScore()
                     player1.printPlayerScore()
                     player2.printPlayerScore()
@@ -199,7 +200,6 @@ fun main() {
                         println("Goodbye")
                         break
                     }
-
                 } // end if
             } //end if
             currPlayer = if (currPlayer == player1) player2 else player1
