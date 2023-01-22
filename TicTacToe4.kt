@@ -101,12 +101,14 @@ class TicTacToeGame: Game(),GameAction {
         var move : String
 
         do {
-            print("${playerName.replaceFirstChar ({ it.uppercase() })}, please enter the row and column for your move (e.g. B2) (or press 'Q' to quit): ")
+            print("${playerName}, please enter the row and column for your move (e.g. B2) (or press 'Q' to quit): ")
             move = readln()
             if (move.uppercase() == "Q")
                 exitProcess(0)
-            if (move.length == 2)
+            if (move.length == 2 && move[0] in listOf('A', 'B', 'C', 'a', 'b', 'c') && move[1] in '1' .. '3') {
+                println("Passed if test")
                 askAgain = false
+            }
             if (askAgain)
                 println("\nInvalid input. Please try again.")
         }  while (askAgain == true)
@@ -161,7 +163,7 @@ class Player (private var playerScore : Int =0, val playerNum : Int, val playerM
 
     init {
         println("Enter name of player $playerNum: ")
-        playerName = readln()
+        playerName = readln().replaceFirstChar ({ it.uppercase() })
         println("$playerName:, you are '$playerMarker'.")
     }
 
@@ -176,8 +178,8 @@ class Player (private var playerScore : Int =0, val playerNum : Int, val playerM
 
 fun main() {
     val TicTacToe = TicTacToeGame()
-    val player1 = Player(playerNum = 1, playerMarker = 'X')
-    val player2 = Player(playerNum = 2, playerMarker = 'O')
+    val player1 = Player(playerNum = 1, playerMarker = 'O')
+    val player2 = Player(playerNum = 2, playerMarker = 'X')
     var currPlayer = player1
 
     while (true) {
