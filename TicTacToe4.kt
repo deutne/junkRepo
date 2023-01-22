@@ -19,8 +19,8 @@ abstract class Game{
     abstract val gameName: String
 }
 
-class GameBoard (val numRows : Int, val numCols : Int) {
-    val board = Array(numRows) { CharArray(numCols) { ' ' } }
+data class GameBoard (val numRows : Int, val numCols : Int) {
+    val board = Array(numRows) { CharArray(numCols) { ' ' }}
 }
 
 interface GameAction {
@@ -108,7 +108,7 @@ class TicTacToeGame: Game(),GameAction {
             if (move.length == 2)
                 askAgain = false
             if (askAgain)
-                println("\nInvalid input. Please try again.")
+                println("\nInvalid input. ${playerName}, please try again.")
         }  while (askAgain == true)
 
         moveArray[0] = move[0].uppercaseChar() - 'A'
