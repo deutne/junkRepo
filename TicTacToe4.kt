@@ -24,7 +24,7 @@ class GameBoard (val numRows : Int, val numCols : Int) {
 }
 
 interface GameAction {
-    fun play(row: Int, column: Int, marking: Char): Unit
+    fun play(row: Int, column: Int, marking: Char)
     fun checkWin(): String
     fun checkDraw(): Boolean
 }
@@ -63,7 +63,7 @@ class TicTacToeGame: Game(),GameAction {
                 return false
             }
         } else {
-            println("\nInvalid input. Please try again.")
+            println("\nInvalid input. ${player.playerName}, Please try again.")
             return false
         }
     }
@@ -102,13 +102,11 @@ class TicTacToeGame: Game(),GameAction {
 
         do {
             print("${playerName}, please enter the row and column for your move (e.g. B2) (or press 'Q' to quit): ")
-            move = readln()
-            if (move.uppercase() == "Q")
+            move = readln().replace(" ", "").uppercase()
+            if (move == "Q")
                 exitProcess(0)
-            if (move.length == 2 && move[0] in listOf('A', 'B', 'C', 'a', 'b', 'c') && move[1] in '1' .. '3') {
-                println("Passed if test")
+            if (move.length == 2)
                 askAgain = false
-            }
             if (askAgain)
                 println("\nInvalid input. Please try again.")
         }  while (askAgain == true)
@@ -191,7 +189,7 @@ fun main() {
 
             if (TicTacToe.numMoves > 4) {
                 if (TicTacToe.checkWin() != " ") {
-                    println("${TicTacToe.checkWin()}")
+                    println("$TicTacToe.checkWin()")
                     if (TicTacToe.checkWin() != "It's a draw!")
                         currPlayer.increaseScore()
                     player1.printPlayerScore()
