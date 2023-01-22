@@ -32,7 +32,7 @@ interface GameAction {
 class TicTacToeGame: Game(),GameAction {
     override val gameName = "Tic Tac Toe"
     var gameboard = GameBoard(3, 3)
-    val rowChars = charArrayOf('A', 'B', 'C')
+    private val rowChars = charArrayOf('A', 'B', 'C')
     var numMoves = 0
 
     init {
@@ -40,7 +40,7 @@ class TicTacToeGame: Game(),GameAction {
         printGameBoard()
     }
 
-    fun printGameBoard() {
+    private fun printGameBoard() {
         println("    1    2    3")
         for (i in 0..2) {
             print("${'A'+i} ")
@@ -54,20 +54,17 @@ class TicTacToeGame: Game(),GameAction {
         // Code for updating the board
         if (row in 0..2 && column in 0..2) {
             if (gameboard.board[row][column] == ' ') {
-                //gameboard.board[row][column] = player.playerMarker
                 numMoves++
-                //printGameBoard()
-                return true
             } else {
                 println("Cell is already filled. Try another.")
-                return false
             }
         } else {
-            println("\nInvalid input. ${player.playerName}, Please try again.")
+            println("\nInvalid input. ${player.playerName} (${player.playerMarker}), Please try again.")
             return false
         }
+        return true
     }
-    fun checkRows(): Any {
+    private fun checkRows(): Any {
         for (i in 0 until gameboard.board.size) {
             if (gameboard.board[i][0] == gameboard.board[i][1] && gameboard.board[i][1] == gameboard.board[i][2] && gameboard.board[i][0] != ' ') {
                 return rowChars[i]
@@ -76,7 +73,7 @@ class TicTacToeGame: Game(),GameAction {
         return -1
     }
 
-    fun checkColumns(): Int{
+    private fun checkColumns(): Int{
         for (i in 0 until gameboard.board.size) {
             if (gameboard.board[0][i] == gameboard.board[1][i] && gameboard.board[1][i] == gameboard.board[2][i] && gameboard.board[0][i] != ' ') {
                 return i + 1
@@ -85,7 +82,7 @@ class TicTacToeGame: Game(),GameAction {
         return -1
     }
 
-    fun checkDiagonals(): Int {
+    private fun checkDiagonals(): Int {
         if (gameboard.board[0][0] == gameboard.board[1][1] && gameboard.board[1][1] == gameboard.board[2][2] && gameboard.board[0][0] != ' ') {
             return 1
         }
@@ -95,21 +92,21 @@ class TicTacToeGame: Game(),GameAction {
         return -1
     }
 
-    fun getMoveFromUser(playerName : String) : IntArray {
+    fun getMoveFromUser(player: Player) : IntArray {
         val moveArray = IntArray(2)
         var askAgain = true
         var move : String
 
         do {
-            print("${playerName}, please enter the row and column for your move (e.g. B2) (or press 'Q' to quit): ")
-            move = readln().replace(" ", "").uppercase()
+            print("${player.playerName}, please enter the row and column for your move (e.g. B2) (or press 'Q' to quit): ")
+            move = readln().replace(" ", "").uppercase()  // Trim white space, capitalize.
             if (move == "Q")
                 exitProcess(0)
             if (move.length == 2)
                 askAgain = false
             if (askAgain)
-                println("\nInvalid input. ${playerName}, please try again.")
-        }  while (askAgain == true)
+                println("\nInvalid input. ${player.playerName}, (${player.playerMarker}) please try again.")
+        }  while (askAgain)
 
         moveArray[0] = move[0].uppercaseChar() - 'A'
         moveArray[1] = move[1] - '1'
@@ -161,7 +158,7 @@ class Player (private var playerScore : Int =0, val playerNum : Int, val playerM
 
     init {
         println("Enter name of player $playerNum: ")
-        playerName = readln().replaceFirstChar ({ it.uppercase() })
+        playerName = readln().replaceFirstChar { it.uppercase() }
         println("$playerName:, you are '$playerMarker'.")
     }
 
@@ -175,29 +172,29 @@ class Player (private var playerScore : Int =0, val playerNum : Int, val playerM
 
 
 fun main() {
-    val TicTacToe = TicTacToeGame()
+    val ticTacToe = TicTacToeGame()
     val player1 = Player(playerNum = 1, playerMarker = 'O')
     val player2 = Player(playerNum = 2, playerMarker = 'X')
     var currPlayer = player1
 
     while (true) {
-        val moveArray = TicTacToe.getMoveFromUser(currPlayer.getPlayerName())
+        val moveArray = ticTacToe.getMoveFromUser(currPlayer)
 
-        if (TicTacToe.isValidMove(moveArray[0], moveArray[1], currPlayer)) {
-            TicTacToe.play(moveArray[0], moveArray[1], currPlayer.getPlayerMark())
+        if (ticTacToe.isValidMove(moveArray[0], moveArray[1], currPlayer)) {
+            ticTacToe.play(moveArray[0], moveArray[1], currPlayer.getPlayerMark())
             //currPlayer = if (currPlayer == player1) player2 else player1
 
-            if (TicTacToe.numMoves > 4) {
-                if (TicTacToe.checkWin() != " ") {
-                    println("$TicTacToe.checkWin()")
-                    if (TicTacToe.checkWin() != "It's a draw!")
+            if (ticTacToe.numMoves > 4) {
+                if (ticTacToe.checkWin() != " ") {
+                    println("$ticTacToe.checkWin()")
+                    if (ticTacToe.checkWin() != "It's a draw!")
                         currPlayer.increaseScore()
                     player1.printPlayerScore()
                     player2.printPlayerScore()
                     println("Do you want to play again? Y for yes, N for no: ")
                     val answer = readln()
                     if (answer.uppercase() == "Y") {
-                        TicTacToe.gameboard = GameBoard(3, 3)
+                        ticTacToe.gameboard = GameBoard(3, 3)
                     } else {
                         println("Goodbye")
                         break
