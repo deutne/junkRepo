@@ -44,8 +44,8 @@ class Player (private var playerScore : Int =0, val playerNum : Int, val playerM
         println("$playerName:, you are '$playerMarker'.")
     }
     // Make these into regular getters on private variables / regular compact fxns.
-    val increaseScore : () -> Unit = {playerScore += 1}
-    val printPlayerScore: () -> Unit = {println("Player $playerName (marker $playerMarker) has $playerScore point(s)")}
+    fun increaseScore() = playerScore++
+    fun printPlayerScore() = println("Player $playerName (marker $playerMarker) has $playerScore point(s)")
 }
 
 class TicTacToeGame: Game(),GameAction {
@@ -174,7 +174,7 @@ fun main() {
 
             if (ticTacToe.numMoves > 4) {
                 if (ticTacToe.checkWin(currPlayer) != " ") {
-                    println("${ticTacToe.checkWin(currPlayer)}")
+                    println(ticTacToe.checkWin(currPlayer))
                     if (ticTacToe.checkWin(currPlayer) != "It's a draw!")
                         currPlayer.increaseScore()
                     player1.printPlayerScore()
