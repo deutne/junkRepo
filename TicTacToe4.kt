@@ -159,7 +159,7 @@ class TicTacToeGame: Game(),GameAction {
                             currPlayer.increaseScore()
                         player1.printPlayerScore()
                         player2.printPlayerScore()
-                        println("Do you want to play again? Y for yes, N for no: ")
+                        println("\nDo you want to play again? Y for yes, N for no: ")
                         val answer = readln()
                         if (answer.uppercase() == "Y") {
                             gameboard = GameBoard(3, 3)
