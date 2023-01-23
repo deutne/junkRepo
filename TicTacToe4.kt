@@ -31,7 +31,24 @@ data class GameBoard (val numRows : Int, val numCols : Int) {
 interface GameAction {
     fun play(row: Int, column: Int, marking: Char)
     fun checkWin(player: Player): String
-    fun checkDraw(): Boolean
+
+    fun printGameBoard()
+}
+
+class Player (private var playerScore : Int =0, val playerNum : Int, val playerMarker : Char) {
+    var playerName : String = ""
+
+    init {
+        println("Enter name of player $playerNum: ")
+        playerName = readln().replaceFirstChar { it.uppercase() }
+        println("$playerName:, you are '$playerMarker'.")
+    }
+    // Make these into regular getters on private variables / regular compact fxns.
+    val getPlayerName : () -> String = {playerName}
+    val getPlayerMark : () -> Char = {playerMarker}
+    val getPlayerScore : () -> Int = {playerScore}
+    val increaseScore : () -> Unit = {playerScore += 1}
+    val printPlayerScore: () -> Unit = {println("Player $playerName (marker $playerMarker) has ${getPlayerScore()} point(s)")}
 }
 
 class TicTacToeGame: Game(),GameAction {
@@ -45,7 +62,7 @@ class TicTacToeGame: Game(),GameAction {
         printGameBoard()
     }
 
-    private fun printGameBoard() {
+    override fun printGameBoard() {
         println("    1    2    3")
         for (i in 0..2) {
             print("${'A'+i} ")
@@ -118,16 +135,6 @@ class TicTacToeGame: Game(),GameAction {
         return moveArray
     }
 
-    override fun checkDraw(): Boolean {
-        for (i in 0..2) {
-            for (j in 0..2) {
-                if (gameboard.board[i][j] == ' ') {
-                    return false
-                }
-            }
-        }
-        return true
-    }
     override fun checkWin(player : Player): String {
         val rowWinner = checkRows()
         if (rowWinner != -1) {
@@ -143,10 +150,7 @@ class TicTacToeGame: Game(),GameAction {
             return ("Player ${player.playerName} wins on diagonal $diagonalWinner")
         }
         if (numMoves == 9) return ("It's a draw!")
-        /* val draw = checkDraw()
-        if(draw){
-            return ("It's a draw!")
-        } */
+
         return " "
     }
 
@@ -156,21 +160,7 @@ class TicTacToeGame: Game(),GameAction {
     } // end fun
 } // end class
 
-class Player (private var playerScore : Int =0, val playerNum : Int, val playerMarker : Char) {
-    var playerName : String = ""
 
-    init {
-        println("Enter name of player $playerNum: ")
-        playerName = readln().replaceFirstChar { it.uppercase() }
-        println("$playerName:, you are '$playerMarker'.")
-    }
-
-    val getPlayerName : () -> String = {playerName}
-    val getPlayerMark : () -> Char = {playerMarker}
-    val getPlayerScore : () -> Int = {playerScore}
-    val increaseScore : () -> Unit = {playerScore += 1}
-    val printPlayerScore: () -> Unit = {println("Player $playerName (marker $playerMarker) has ${getPlayerScore()} point(s)")}
-}
 
 fun main() {
     val ticTacToe = TicTacToeGame()
