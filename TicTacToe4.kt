@@ -1,6 +1,6 @@
+
 /* Notes from Dena:
 I tried to make Player an interface, but ran into a brick wall so far.
-
 Ideas I have that are not implemented yet:
     Program should not ask for names after first round.
         -> solution Cecile: program doesn't start "main" again but now create a new empty board (player who lost last game, starts the new game)
@@ -11,7 +11,6 @@ Ideas I have that are not implemented yet:
                   Need to be done: We still get an error when we enter just a letter ('g' instead of 'B2' for exemple)
                   -> solution Caroline: getMoveFromUser now checks that length is 2. Removed redundant code that was repeated in isValidMove.
     Notes Caroline: Point system gave points to current player if result was a draw. Fixed with if-sentence
-
 Note from Dena: These 3 are only useful if we make the variables private to the class:
     val getPlayerName : () -> String = {playerName}
     val getPlayerMark : () -> Char = {playerMarker}
@@ -31,7 +30,6 @@ data class GameBoard (val numRows : Int, val numCols : Int) {
 interface GameAction {
     fun play(row: Int, column: Int, marking: Char)
     fun checkWin(player: Player): String
-
     fun printGameBoard()
 }
 
@@ -76,6 +74,7 @@ class TicTacToeGame: Game(),GameAction {
                 numMoves++
             } else {
                 println("Cell is already filled. Try another.")
+                return false
             }
         } else {
             println("\nInvalid input. ${player.playerName} (marker ${player.playerMarker}), Please try again.")
@@ -83,6 +82,8 @@ class TicTacToeGame: Game(),GameAction {
         }
         return true
     }
+
+
     private fun checkRows(): Any {
         for (i in 0 until gameboard.board.size) {
             if (gameboard.board[i][0] == gameboard.board[i][1] && gameboard.board[i][1] == gameboard.board[i][2] && gameboard.board[i][0] != ' ') {
@@ -111,7 +112,8 @@ class TicTacToeGame: Game(),GameAction {
         return -1
     }
 
-    fun getMoveFromUser(player: Player) : IntArray {
+    //metoden som er høyere ordens funksjon og kaller in lambda funksjon "findIndex"
+    fun getMoveFromUser(player: Player, indexMove: (Char,Char) -> Int ) : IntArray {
         val moveArray = IntArray(2)
         var askAgain = true
         var move : String
@@ -127,10 +129,12 @@ class TicTacToeGame: Game(),GameAction {
                 println("\nInvalid input. ${player.playerName} (marker ${player.playerMarker}), please try again.")
         }  while (askAgain)
 
-        moveArray[0] = move[0].uppercaseChar() - 'A'
-        moveArray[1] = move[1] - '1'
+        moveArray[0] = indexMove(move[0].uppercaseChar(),'A')
+        moveArray[1] = indexMove(move[1], '1')
+
         return moveArray
     }
+
 
     override fun checkWin(player : Player): String {
         val rowWinner = checkRows()
@@ -158,19 +162,18 @@ class TicTacToeGame: Game(),GameAction {
 } // end class
 
 
-
 fun main() {
     val ticTacToe = TicTacToeGame()
     val player1 = Player(playerNum = 1, playerMarker = 'O')
     val player2 = Player(playerNum = 2, playerMarker = 'X')
     var currPlayer = player1
+    val findIndex = {a: Char , b: Char -> (a - b) }       //lambda funksjon som beregner forskjell mellom to char
 
     while (true) {
-        val moveArray = ticTacToe.getMoveFromUser(currPlayer)
+        val moveArray = ticTacToe.getMoveFromUser(currPlayer,findIndex)
 
         if (ticTacToe.isValidMove(moveArray[0], moveArray[1], currPlayer)) {
             ticTacToe.play(moveArray[0], moveArray[1], currPlayer.playerMarker)
-            //currPlayer = if (currPlayer == player1) player2 else player1
 
             if (ticTacToe.numMoves > 4) {
                 if (ticTacToe.checkWin(currPlayer) != " ") {
@@ -183,6 +186,8 @@ fun main() {
                     val answer = readln()
                     if (answer.uppercase() == "Y") {
                         ticTacToe.gameboard = GameBoard(3, 3)
+                        ticTacToe.printGameBoard()
+                        ticTacToe.numMoves = 0
                     } else {
                         println("Goodbye")
                         break
@@ -193,3 +198,5 @@ fun main() {
         } //end if
     } //end while
 } //end main()
+
+
