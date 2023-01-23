@@ -1,22 +1,4 @@
 
-/* Notes from Dena:
-I tried to make Player an interface, but ran into a brick wall so far.
-Ideas I have that are not implemented yet:
-    Program should not ask for names after first round.
-        -> solution Cecile: program doesn't start "main" again but now create a new empty board (player who lost last game, starts the new game)
-    Program should keep track of who won and how many times. Print score after each round.
-        -> solution Cecile: implemented
-    Notes Cecile: I add an interface GameAction that contains the main actions for games (sort of) and override the method in tictactoe
-                  I made the fun in player as lambdas
-                  Need to be done: We still get an error when we enter just a letter ('g' instead of 'B2' for exemple)
-                  -> solution Caroline: getMoveFromUser now checks that length is 2. Removed redundant code that was repeated in isValidMove.
-    Notes Caroline: Point system gave points to current player if result was a draw. Fixed with if-sentence
-Note from Dena: These 3 are only useful if we make the variables private to the class:
-    val getPlayerName : () -> String = {playerName}
-    val getPlayerMark : () -> Char = {playerMarker}
-    val getPlayerScore : () -> Int = {playerScore}
- */
-
 import kotlin.system.exitProcess
 
 abstract class Game {
@@ -41,7 +23,7 @@ class Player (private var playerScore : Int =0, val playerNum : Int, val playerM
         playerName = readln().replaceFirstChar { it.uppercase() }
         println("$playerName:, you are '$playerMarker'.")
     }
-    // Make these into regular getters on private variables / regular compact fxns.
+
     fun increaseScore() = playerScore++
     fun printPlayerScore() = println("Player $playerName (marker $playerMarker) has $playerScore point(s)")
 }
@@ -113,7 +95,7 @@ class TicTacToeGame: Game(),GameAction {
     }
 
     //metoden som er høyere ordens funksjon og kaller in lambda funksjon "findIndex"
-    fun getMoveFromUser(player: Player, indexMove: (Char,Char) -> Int ) : IntArray {
+    fun getMoveFromUser(player: Player, indexMove: (Char, Char) -> Int ) : IntArray {
         val moveArray = IntArray(2)
         var askAgain = true
         var move : String
@@ -135,7 +117,6 @@ class TicTacToeGame: Game(),GameAction {
         return moveArray
     }
 
-
     override fun checkWin(player : Player): String {
         val rowWinner = checkRows()
         if (rowWinner != -1) {
@@ -144,7 +125,6 @@ class TicTacToeGame: Game(),GameAction {
         val colWinner = checkColumns()
         if (colWinner != -1) {
             return "Player ${player.playerName} wins on column $colWinner"
-
         }
         val diagonalWinner = checkDiagonals()
         if (diagonalWinner != -1) {
@@ -158,19 +138,20 @@ class TicTacToeGame: Game(),GameAction {
     override fun play(row: Int, column: Int, marking: Char) {
         gameboard.board[row][column] = marking
         printGameBoard()
-    } // end fun
+    }
 } // end class
-
 
 fun main() {
     val ticTacToe = TicTacToeGame()
     val player1 = Player(playerNum = 1, playerMarker = 'O')
     val player2 = Player(playerNum = 2, playerMarker = 'X')
     var currPlayer = player1
-    val findIndex = {a: Char , b: Char -> (a - b) }       //lambda funksjon som beregner forskjell mellom to char
+
+    //lambda funksjon som beregner forskjell mellom to char
+    val findIndex = {a: Char , b: Char -> (a - b) }
 
     while (true) {
-        val moveArray = ticTacToe.getMoveFromUser(currPlayer,findIndex)
+        val moveArray = ticTacToe.getMoveFromUser(currPlayer, findIndex)
 
         if (ticTacToe.isValidMove(moveArray[0], moveArray[1], currPlayer)) {
             ticTacToe.play(moveArray[0], moveArray[1], currPlayer.playerMarker)
@@ -198,5 +179,3 @@ fun main() {
         } //end if
     } //end while
 } //end main()
-
-
