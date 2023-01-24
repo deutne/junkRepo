@@ -15,7 +15,7 @@ interface GameAction {
     fun printGameBoard()
 }
 
-class Player (private var playerScore : Int =0, val playerNum : Int, val playerMarker : Char) {
+class Player (val playerNum : Int, val playerMarker : Char, private var playerScore : Int =0) {
     var playerName : String = ""
 
     init {
@@ -30,9 +30,9 @@ class Player (private var playerScore : Int =0, val playerNum : Int, val playerM
 
 class TicTacToeGame: Game(),GameAction {
     override val gameName = "Tic Tac Toe"
-    var gameboard = GameBoard(3, 3)
+    private var gameboard = GameBoard(3, 3)
     private val rowChars = charArrayOf('A', 'B', 'C')
-    var numMoves = 0
+    private var numMoves = 0
 
     init {
         println("Welcome to $gameName!")
@@ -49,7 +49,7 @@ class TicTacToeGame: Game(),GameAction {
             println()
         }
     }
-    fun isValidMove(row: Int, column: Int, player: Player): Boolean {
+    private fun isValidMove(row: Int, column: Int, player: Player): Boolean {
         // Code for updating the board
         if (row in 0..2 && column in 0..2) {
             if (gameboard.board[row][column] == ' ') {
@@ -95,7 +95,7 @@ class TicTacToeGame: Game(),GameAction {
     }
 
     //metoden som er høyere ordens funksjon og kaller in lambda funksjon "findIndex"
-    fun getMoveFromUser(player: Player, indexMove: (Char, Char) -> Int ) : IntArray {
+    private fun getMoveFromUser(player: Player, indexMove: (Char, Char) -> Int ) : IntArray {
         val moveArray = IntArray(2)
         var askAgain = true
         var move : String
